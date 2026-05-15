@@ -36,7 +36,7 @@
 <a href="#sec-9" style="text-decoration:none">9. Related work — verified facts</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-1" style="text-decoration:none">9.1 Missing references</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-2" style="text-decoration:none">9.2 Notable framing softening</a><br>
-<a href="#sec-10" style="text-decoration:none">10. Open questions and limitations</a><br>
+<a href="#sec-10" style="text-decoration:none">10. Open issues</a><br>
 <a href="#sec-11" style="text-decoration:none">11. Reproduction recipe</a><br>
 <a href="#footnotes" style="text-decoration:none">Footnotes</a>
 
@@ -152,7 +152,10 @@ PQ-sig+lattice-PoK paradigm Lemur does not engage with:
 Lemur sits firmly in the **lattice-native synchronized ROM** column.
 Within the synchronized lattice column, Lemur and Anada et al. (ICISC
 2024<sup id="ref-9b">[9](#fn-9)</sup>) are siblings, not ancestor/descendant — Anada targets the
-*standard model*, a strictly stronger security setting.
+*standard model* (stronger proof-model than Lemur's ROM) but uses
+the *certified-key* threat model (weaker than Lemur's rogue-key-safe).
+They occupy a different cell of the (proof-model × threat-model)
+grid, not a strict ordering.
 
 Lemur's stated paradigm trichotomy (BLS / hash+SNARK / lattice-
 synchronized in §1<sup id="ref-10">[10](#fn-10)</sup>) is **incomplete**: it sidesteps both the
@@ -666,11 +669,16 @@ Lemur's 2026 submission), all uncited:
   + lattice-PoK.
 - [**Anada-Fukumitsu-Hasegawa, "Tightly Secure Lattice-Based
   Synchronized Aggregate Signature in Standard Model"**](https://link.springer.com/chapter/10.1007/978-981-96-5566-3_4),
-  **ICISC 2024**<sup id="ref-9d">[9](#fn-9)</sup>. A direct sibling of Lemur in the
-  synchronized lattice column, with a **strictly stronger security
-  model** (standard, not ROM). Apples-to-apples comparison would
-  require either Lemur lifting to standard-model security or
-  acknowledging that Anada is tighter on that axis.
+  **ICISC 2024**<sup id="ref-9d">[9](#fn-9)</sup>. A sibling of Lemur in the
+  synchronized lattice column, **stronger on the proof-model axis
+  (standard model, not ROM)** but **weaker on the threat-model axis
+  (certified-key model, not rogue-key-safe)** — the adversary cannot
+  register arbitrary public keys, sidestepping rogue-key attacks
+  rather than defending against them. Apples-to-apples comparison
+  therefore requires either lifting Lemur to standard-model security
+  *or* lifting Anada to a rogue-key-safe threat model; the two
+  papers do not sit in the same cell of the (proof-model × threat-model)
+  grid.
 - **Hash+SNARK ecosystem successors to [7]:**
   [LeanSig](https://eprint.iacr.org/2025/1332)<sup id="ref-45b">[45](#fn-45)</sup>,
   [HAPPIER](https://link.springer.com/chapter/10.1007/978-3-032-15541-2_1)<sup id="ref-46b">[46](#fn-46)</sup>. Both extend Drake et al.'s
@@ -707,65 +715,71 @@ Chipmunk's parameters miss their claimed security level by 70+ bits
 in the median case.
 
 
-### <a id="sec-10"></a>10. Open questions and limitations of this review [↑](#toc)
+### <a id="sec-10"></a>10. Open issues [↑](#toc)
 
-- **Security proof not formally audited.** The 128-bit claim rests
-  on the lattice estimator [1] and the MSIS estimator. I did not
-  re-run either. The theory-lens audit verified the proof structure
-  (Theorem 3.1's tight `8m·ε₂` bound, Lemma 3.5's reduction chain,
-  Lemma 4.1's `N(Q+1)²` loss) at the lemma-statement level but did
-  not check every hybrid hop. The implementation correctness is
-  independent of this (it relies on the assumption, not the
-  reduction), but the *security* of the implementation rests on
-  Theorem 4.1 being correct.
+Substantive items audits/reviewers flagged that remain
+**unresolvable** without resources beyond this review's scope.
 
-- **Reduction loss not absorbed.** `N(Q+1)² ≈ 2¹⁴⁰` at
-  `N=2²⁰, Q_H=2⁶⁰`. Lemur picks MLWE/MSIS parameters at the 128-bit
-  core-SVP level; absorbing the multi-user loss would require
-  ~268-bit hardness. Community-standard practice for lattice
-  multi-sigs (Dilithium does the same) but a real gap a strict
-  reviewer should flag.
+- **No runtime comparison vs Chipmunk.** Paper §1.1 acknowledges:
+  "Since Chipmunk's implemented parameters are at a substantially
+  lower security level (around 40 bits) than ours (128 bits), we
+  are unable to provide a meaningful runtime comparison against
+  Chipmunk."<sup id="ref-7b">[7](#fn-7)</sup> Resolving would require re-fitting Chipmunk's
+  parameters at corrected 128-bit security — paper notes Chipmunk's
+  scripts could not find feasible parameters at the new RHF
+  threshold. So the "comparison" stays purely size-based.
 
-- **No runtime comparison vs Chipmunk.** §1.1 acknowledges: "Since
-  Chipmunk's implemented parameters are at a substantially lower
-  security level (around 40 bits) than ours (128 bits), we are
-  unable to provide a meaningful runtime comparison against
-  Chipmunk."<sup id="ref-7b">[7](#fn-7)</sup> Reasonable but worth noting — a reader who wants to
-  know "how fast is verification at scale vs Chipmunk?" gets no
-  answer. The "comparison" is purely size-based.
+- **The `RHF ≤ 1.0045` threshold is itself a choice.** Lemur sets
+  this threshold for all parameter cells and notes Chipmunk's
+  scripts could not find feasible parameters at it. A hostile
+  reviewer would ask whether the threshold is structurally
+  unfavorable to Chipmunk's re-fit: a marginally looser RHF
+  (say 1.005, which Chipmunk's original scripts could satisfy)
+  would let Chipmunk re-fit cleanly under the modern estimator,
+  with what size-and-security trade-offs is an open empirical
+  question this review cannot answer.
 
-- **N=2²⁰ end-to-end not measured.** Only the batch-verify path at
-  `N=2¹⁵` via `bench_verify --zero-fixture`. The aggregation timing
-  at `N=2²⁰` is *extrapolated* in the paper from the `N=8192`
-  measurement via linear scaling; the paper acknowledges this. I did
-  not even measure `N=8192` aggregation here (OOM). A reviewer with
-  16+ GiB RAM should confirm linearity holds.
+- **Drake-vs-Lemur timing self-undercut.** Paper Table 2 reports
+  ~12 minutes for aggregation at `N=2²⁰` — *within the same order
+  of magnitude* as the "seconds-to-minutes" range cited for the
+  pqSNARK proof generation it dismisses as "heavy proof machinery".
+  Resolving requires a benchmarked comparison (Drake et al. or
+  LeanSig running on the same hardware) that neither this review
+  nor the paper performs.
+
+- **N=2²⁰ end-to-end not measured.** The aggregation timing at
+  `N=2²⁰` is *extrapolated* in the paper from the `N=8192`
+  measurement via linear scaling; the paper acknowledges this.
+  Reviewer host (8 GiB) OOM-killed `bench --fast` at the `N=8192`
+  signer-replication stage. A 16+ GiB host would close both the
+  `N=8192` aggregation cell and the realized aggregate-size
+  variance check.
+
+The following are limitations of this *review's* scope rather than
+of the paper, listed for completeness:
+
+- **Security proof not formally audited.** Theory-lens audit verified
+  proof structure (Theorem 3.1's tight `8m·ε₂` bound, Lemma 3.5's
+  reduction chain, Lemma 4.1's `N(Q+1)²` loss) at the lemma-statement
+  level but did not re-check every hybrid hop. Implementation
+  correctness is independent of this; *security* of the implementation
+  rests on Theorem 4.1 being correct.
+
+- **Reduction loss not absorbed in parameters.** `N(Q+1)² ≈ 2¹⁴⁰` at
+  `N=2²⁰, Q_H=2⁶⁰`; absorbing the multi-user loss would require
+  ~268-bit hardness, but Lemur picks parameters at the 128-bit
+  core-SVP level. Community-standard practice for lattice multi-sigs
+  (Dilithium does the same) but worth flagging.
 
 - **Lemma 4.1 ℓ=1 restriction.** Proved only for `ℓ=1`; all shipped
-  parameters use `ℓ=1` so this is pragmatically fine, but Theorem
-  4.1 is stated for general `ℓ` and the restriction enters one layer
-  down. The paper acknowledges this (PDF line 545).
+  parameters use `ℓ=1` so this is pragmatically fine, but Theorem 4.1
+  is stated for general `ℓ` and the restriction enters one layer down.
+  The paper acknowledges this in the §4.1 preface.
 
-- **Side-channel resistance not assessed.** The code claims
-  constant-time discipline in `ntt.rs` (signed-mask reduction,
-  branch-free conditional subtract). Not verified with a
-  side-channel testing tool (e.g., `dudect`). The KOTS Gaussian
-  sampler is constant-time by construction (every coefficient
-  consumes exactly `cdt_bytes` of XOF output regardless of value).
-
-- **Comparison vs. Drake et al. is qualitative only.** The
-  field-lens audit notes the paper's one-sentence dismissal of
-  hash+SNARK aggregation does not cite benchmarked numbers and
-  ignores LeanSig / HAPPIER. The Lemur paper itself reports
-  ~12 minutes for aggregation at `N=2²⁰`, which is *within the
-  same order of magnitude* as the "seconds-to-minutes" range cited
-  for pqSNARK proof generation. A more careful comparison would
-  acknowledge this.
-
-- **No comparison vs Aardal et al. (Falcon+LaBRADOR) or Anada et
-  al. (standard-model lattice synchronized).** Both are 2024 and
-  uncited. The PQ-sig+lattice-PoK paradigm is genuinely missing
-  from Lemur's §1 trichotomy.
+- **Side-channel resistance not assessed.** Code claims constant-time
+  discipline in `ntt.rs` (signed-mask reduction, branch-free
+  conditional subtract); not verified with `dudect` or similar. The
+  KOTS Gaussian sampler is constant-time by construction.
 
 - **Implementation profile coverage.** Both implementations ship
   only the `d=256, k=4, τ=20, N=1024` cell. Other rows in
