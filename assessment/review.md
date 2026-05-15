@@ -1,4 +1,41 @@
-# Lemur — Analysis & Correctness Review
+## Lemur — Analysis & Correctness Review
+
+<a id="toc"></a>
+<sub>
+
+**Contents**
+
+- [1. Executive verdict](#sec-1)
+- [2. Field placement and paradigm](#sec-2)
+- [3. What the paper proves and what it does not](#sec-3)
+- [4. Correctness audit — Python reference vs. paper](#sec-4)
+  - [4.1 KOTS — `lemur-py/kots.py` ↔ paper Figure 3](#sec-4-1)
+  - [4.2 HVC — `lemur-py/hvc.py` ↔ paper Figure 4 + Appendix B](#sec-4-2)
+  - [4.3 Lemur composition — `lemur-py/lemur.py` ↔ paper Figure 5](#sec-4-3)
+  - [4.4 Audit checkpoints — none of the foot-guns triggered](#sec-4-4)
+- [5. Implementation testing — deterministic checks](#sec-5)
+  - [5.1 Rust test suite](#sec-5-1)
+  - [5.2 Aggregate-signature size — `lemur sizes`](#sec-5-2)
+  - [5.3 Rice-encoded sizes for larger N — `rice_sizes.py`](#sec-5-3)
+  - [5.4 Python ↔ Rust byte-equivalence — `vectors`](#sec-5-4)
+  - [5.5 Chipmunk security recomputation — committed estimator output](#sec-5-5)
+  - [5.6 Sage parameter-estimator outputs — reproduced from source](#sec-5-6)
+- [6. Benchmark measurements vs paper](#sec-6)
+  - [6.1 What I could not run](#sec-6-1)
+- [7. Performance internals — what is actually fast](#sec-7)
+  - [7.1 Gaussian CDT sampler (`lemur-rs/src/sample.rs`)](#sec-7-1)
+  - [7.2 NTT — two backends (`ntt.rs` + `aux_ntt.rs`)](#sec-7-2)
+  - [7.3 Rayon parallelism (`lemur-rs/src/lemur.rs:lemur_aggregate`)](#sec-7-3)
+- [8. Parameter regeneration flow](#sec-8)
+- [9. Related work — verified facts](#sec-9)
+  - [9.1 Missing references the paper *should* have engaged with](#sec-9-1)
+  - [9.2 Notable framing softening worth flagging](#sec-9-2)
+- [10. Open questions and limitations of this review](#sec-10)
+- [11. Reproduction recipe](#sec-11)
+- [Footnotes](#footnotes)
+
+</sub>
+
 
 Paper: *Lemur: Scalable Post-Quantum Synchronized Multi-Signatures*
 (`submission/report.pdf`, 24 pages, anonymous ACM CCS submission for
@@ -38,9 +75,8 @@ environment where this review was produced):
   `lemur-prior-work-survey`.
 - Working notes and audit/review-subagent transcripts under `tmp/`.
 
----
 
-## 1. Executive verdict
+### <a id="sec-1"></a>1. Executive verdict [↑](#toc)
 
 **The implementation matches the paper.** Every deterministic
 quantity I checked (aggregate-signature sizes at N ∈ {2¹⁰, 2¹⁵, 2²⁰}<sup id="ref-1">[1](#fn-1)</sup>,
@@ -69,13 +105,14 @@ provide a meaningful runtime comparison")<sup id="ref-7">[7](#fn-7)</sup>. For a
 substantive contribution survives all three caveats; for production
 deployment in Ethereum-style consensus, the absence of timing
 comparison and the lack of comparison against
-post-2024 paradigms (Aardal et al. CRYPTO '24 Falcon+LaBRADOR<sup id="ref-8">[8](#fn-8)</sup>,
-Anada et al. ICISC '24 standard-model lattice synchronized<sup id="ref-9">[9](#fn-9)</sup>) leaves
+post-2024 paradigms ([Aardal et al.](https://eprint.iacr.org/2024/311)
+CRYPTO '24 Falcon+LaBRADOR<sup id="ref-8">[8](#fn-8)</sup>,
+[Anada et al.](https://link.springer.com/chapter/10.1007/978-981-96-5566-3_4)
+ICISC '24 standard-model lattice synchronized<sup id="ref-9">[9](#fn-9)</sup>) leaves
 gaps a reviewer should flag.
 
----
 
-## 2. Field placement and paradigm
+### <a id="sec-2"></a>2. Field placement and paradigm [↑](#toc)
 
 The taxonomy of post-quantum multi-signatures the paper sits inside,
 extended after the field-lens audit to include the
@@ -125,9 +162,8 @@ column<sup id="ref-2b">[2](#fn-2)</sup>:
 | Aggregation | Weighted random sum, γ retries | Inherited unchanged |
 | Stateful sign | BDS08 [4]<sup id="ref-13">[13](#fn-13)</sup> | Inherited unchanged |
 
----
 
-## 3. What the paper proves and what it does not
+### <a id="sec-3"></a>3. What the paper proves and what it does not [↑](#toc)
 
 **Proves:**
 
@@ -167,12 +203,14 @@ column<sup id="ref-2b">[2](#fn-2)</sup>:
 
 **Loose ends in the proof structure:**
 
-- **Lemma 4.1 is restricted to ℓ=1** (PDF line 620 in `pdftotext`
-  layout)<sup id="ref-21">[21](#fn-21)</sup>. The paper itself acknowledges this at line 545: "Some of
-  our proofs for the KOTS require ℓ = 1, which is already always the
-  case in our parameter setting." All shipped parameters use `ℓ=1`,
-  so this is pragmatically fine — but Theorem 4.1 is stated for
-  general `ℓ`, and the restriction is one layer down at Lemma 4.1.
+- **Lemma 4.1 is restricted to ℓ=1**<sup id="ref-21">[21](#fn-21)</sup>. The paper itself
+  acknowledges this in the §4.1 preface to Theorem 4.1's proof:
+  "Some of our proofs for the KOTS require ℓ = 1, which is already
+  always the case in our parameter setting. However, we keep the
+  description general by using the ℓ parameter." All shipped
+  parameters use `ℓ=1`, so this is pragmatically fine — but
+  Theorem 4.1 is stated for general `ℓ`, and the restriction is one
+  layer down at Lemma 4.1.
 - **The `N(Q+1)²` reduction loss is not absorbed in parameter
   selection.** At `N=2²⁰`, `Q_H=2⁶⁰`, the loss is `~2¹⁴⁰`, which
   would require ~268-bit core hardness to absorb fully. Lemur picks
@@ -199,20 +237,24 @@ column<sup id="ref-2b">[2](#fn-2)</sup>:
   30.1 ms batch verify at `N=2¹⁰` at 24 threads<sup id="ref-24">[24](#fn-24)</sup> — reproduced within
   ~10–15 % of the linear thread-count scaling (§6 below).
 - **Security claims** (estimator-bound): λ = 128 under MLWE + MSIS
-  via APS-style lattice estimation<sup id="ref-25">[25](#fn-25)</sup>. Not independently re-run here
-  (no SageMath in container), but the committed
-  `parameter/summary.txt` and `chipmunk_original_security_summary.txt`
-  are inspectable<sup id="ref-4b">[4](#fn-4)</sup>.
+  via APS-style lattice estimation<sup id="ref-25">[25](#fn-25)</sup>. **Independently re-run** via
+  SageMath 9.5 installed during this review; all three estimator
+  outputs
+  ([`summary.txt`](../submission/code/parameter/summary.txt),
+  [`chipmunk_summary.txt`](../submission/code/parameter/chipmunk_summary.txt),
+  [`chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt))
+  reproduce against the committed files — bit-identical for the two
+  chipmunk files, and field-identical row-by-row across all 16
+  (τ, N) cells for `summary.txt`<sup id="ref-51">[51](#fn-51)</sup>.
 
----
 
-## 4. Correctness audit — Python reference vs. paper
+### <a id="sec-4"></a>4. Correctness audit — Python reference vs. paper [↑](#toc)
 
 The Python reference (`lemur-py/`, ~3.6 kLOC) is the spec. Variable
 naming matches the paper to the symbol. The Rust port (`lemur-rs/`,
 ~9 kLOC) is byte-equal to it on test vectors (§5).
 
-### 4.1 KOTS — `lemur-py/kots.py` ↔ paper Figure 3
+#### <a id="sec-4-1"></a>4.1 KOTS — `lemur-py/kots.py` ↔ paper Figure 3 [↑](#toc)
 
 | Paper algorithm | Code location | Match |
 | --- | --- | --- |
@@ -221,7 +263,7 @@ naming matches the paper to the symbol. The Rust port (`lemur-rs/`,
 | `Sign: H = H(μ) = [I_ℓ | H'] with H' ← T_{α_H}, Z = HS` | `kots.py:_build_H` (lines 90–99) for H; `kots.py:sign` (lines 140–152) for Z; identity block encoded as `H[i,i,0]=1` (constant polynomial 1) | ✓ |
 | `iVrfy bound β_z` / `sVrfy bound β_σ` / `wVrfy bound 2β_σ` | Three thin wrappers `ivrfy`/`svrfy`/`wvrfy` (lines 163–170) over `vrfy(beta)` (lines 154–161) | ✓ |
 
-### 4.2 HVC — `lemur-py/hvc.py` ↔ paper Figure 4 + Appendix B
+#### <a id="sec-4-2"></a>4.2 HVC — `lemur-py/hvc.py` ↔ paper Figure 4 + Appendix B [↑](#toc)
 
 | Paper algorithm | Code location | Match |
 | --- | --- | --- |
@@ -232,7 +274,7 @@ naming matches the paper to the symbol. The Rust port (`lemur-rs/`,
 | Babai encode/decode for compressed openings (Fig 6, Lemma B.1) | `hvc.py:_decompose_coeff_zz` / `babai_encode_block` / `babai_decode_block` (lines 241–340) | ✓ |
 | BDS08 traversal [4]: auth path + treehash + retain | `hvc.py:bds_init` / `bds_advance` / `bds_opening` (lines 467–635); `phi` counter is the leaf cursor | ✓ |
 
-### 4.3 Lemur composition — `lemur-py/lemur.py` ↔ paper Figure 5
+#### <a id="sec-4-3"></a>4.3 Lemur composition — `lemur-py/lemur.py` ↔ paper Figure 5 [↑](#toc)
 
 | Paper algorithm | Code location | Match |
 | --- | --- | --- |
@@ -240,7 +282,7 @@ naming matches the paper to the symbol. The Rust port (`lemur-rs/`,
 | `Aggregate`: pre-verify every input, then do-while with `H(t,μ,P,j)` for up to γ attempts | `lemur.py:aggregate` (lines 264–297); randomizer oracle at `_hash_to_randomizers` (lines 44–58); break on `avrfy` passing (line 294), **not** on local norm checks alone | ✓ |
 | Weighted-sum on Z and on opening | `lemur.py:_scale_opening` + `_add_openings` + per-signer `kots.ring.scale_mat` in aggregate loop | ✓ |
 
-### 4.4 Audit checkpoints — none of the foot-guns triggered
+#### <a id="sec-4-4"></a>4.4 Audit checkpoints — none of the foot-guns triggered [↑](#toc)
 
 Four spots that consume 90 % of audit time in this class of scheme.
 All four are correctly implemented (independently verified by the
@@ -254,11 +296,10 @@ implementation-lens audit and its reviewer):
 - `lemur.py:aggregate` line 294: breaks via `avrfy` (norm +
   algebraic identity), not on a partial check<sup id="ref-29">[29](#fn-29)</sup>. ✓
 
----
 
-## 5. Implementation testing — deterministic checks
+### <a id="sec-5"></a>5. Implementation testing — deterministic checks [↑](#toc)
 
-### 5.1 Rust test suite
+#### <a id="sec-5-1"></a>5.1 Rust test suite [↑](#toc)
 
 ```
 cargo test --release
@@ -279,7 +320,7 @@ harness + 5 integration-test files)<sup id="ref-30">[30](#fn-30)</sup>:
 
 Total: 52 tests. Time: ~1 minute on 11 threads.
 
-### 5.2 Aggregate-signature size — `lemur sizes`
+#### <a id="sec-5-2"></a>5.2 Aggregate-signature size — `lemur sizes` [↑](#toc)
 
 ```
 cargo run --release --bin lemur -- sizes
@@ -310,7 +351,7 @@ are different objects despite similar names.
 predicts 201.2 KB; documented ~3 % Rice-coding variance, per
 `code/README.md` last paragraph)<sup id="ref-32">[32](#fn-32)</sup>.
 
-### 5.3 Rice-encoded sizes for larger N — `rice_sizes.py`
+#### <a id="sec-5-3"></a>5.3 Rice-encoded sizes for larger N — `rice_sizes.py` [↑](#toc)
 
 ```
 cd parameter && python3 rice_sizes.py
@@ -330,7 +371,7 @@ implementation for `N=2¹⁰`; Rice-encoded on the corresponding cells
 of Table 5 for `N ∈ {2¹⁵, 2²⁰}`. Chipmunk: theoretical, from their
 scripts").
 
-### 5.4 Python ↔ Rust byte-equivalence — `vectors`
+#### <a id="sec-5-4"></a>5.4 Python ↔ Rust byte-equivalence — `vectors` [↑](#toc)
 
 ```
 python3 cli.py vectors --tau 3 --signers 2 --slot 0 --msg "artifact check" --out /tmp/lemur-py-vectors.json
@@ -358,9 +399,9 @@ CRT-via-two-aux-primes NTT** (`aux_ntt.rs`)<sup id="ref-34">[34](#fn-34)</sup>, 
 byte-for-byte on `Z`. The schoolbook and CRT implementations of the
 same KOTS multiplication produce identical signed Z coefficients.
 
-### 5.5 Chipmunk security recomputation — committed estimator output
+#### <a id="sec-5-5"></a>5.5 Chipmunk security recomputation — committed estimator output [↑](#toc)
 
-Inspected `parameter/chipmunk_original_security_summary.txt`
+Inspected [`parameter/chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt)
 directly. Independent verification by the field-lens audit and its
 reviewer:
 
@@ -376,9 +417,44 @@ gives ~23 bits. Either way the gap from the 112/128-bit claim is real
 and large. The data is convincing as evidence Chipmunk's parameters
 are far below their claimed security level, just not "exactly 40."
 
----
+#### <a id="sec-5-6"></a>5.6 Sage parameter-estimator outputs — reproduced from source [↑](#toc)
 
-## 6. Benchmark measurements vs paper
+Earlier review iterations could not validate the parameter-estimator
+outputs because SageMath was not installed. SageMath 9.5 was
+installed for this round (`apt-get install --no-install-recommends
+sagemath`), all three Sage scripts re-run from
+`submission/code/parameter/`, and the freshly-generated outputs
+compared against the committed files:
+
+| Script | Output file | Runtime | Result |
+| --- | --- | ---: | --- |
+| [`chipmunk_original.sage`](../submission/code/parameter/chipmunk_original.sage) | [`chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt) | 2m45s | **byte-identical** to committed |
+| [`chipmunk_param.sage`](../submission/code/parameter/chipmunk_param.sage) | [`chipmunk_summary.txt`](../submission/code/parameter/chipmunk_summary.txt) | 13s | **byte-identical** to committed |
+| [`lemur_param.sage`](../submission/code/parameter/lemur_param.sage) | [`summary.txt`](../submission/code/parameter/summary.txt) | ~25 min (chunked) | **field-identical** row-by-row across all 16 `(τ, N)` cells |
+
+Notes:
+
+- **`chipmunk_original.sage`** searches `secpars × taus × rhos =
+  2 × 4 × 3 = 24` cells under the original Dilithium-style estimator.
+  Diff against the committed file is empty — the `22.8 → 39.4` RSIS
+  rop range and every other column reproduce exactly.
+- **`chipmunk_param.sage`** searches the same Chipmunk space under
+  the *MSIS-optimised* estimator; finishes in 13 s and the output
+  is bit-identical to committed.
+- **`lemur_param.sage`** was OOM-killed at ~3 min on a single
+  end-to-end run (the lattice-estimator allocates heavily during
+  the higher-β MLWE estimates). Re-running in 16 sub-runs partitioned
+  by `(τ, N)` succeeded in ~25 min total; parsed back into rows the
+  resulting `summary.txt` matches the committed file field-by-field
+  across all 16 cells (verified by a per-cell Python diff keyed on
+  `(τ, N)`). The wall-time gap vs `chipmunk_param.sage` reflects
+  Lemur's broader parameter search and heavier MSIS-vs-MLWE
+  cross-checks per cell.
+- Committed outputs are correctly produced from the committed source
+  scripts; no hidden inputs, no manual edits.
+
+
+### <a id="sec-6"></a>6. Benchmark measurements vs paper [↑](#toc)
 
 Hardware: ARM aarch64 Linux, 11 threads, 8 GiB RAM. Paper baseline:
 24 threads.
@@ -432,7 +508,7 @@ Sampler microbench (`bench --sampler-only`):
 Indexed-CDT bucket dispatch gives a **~2.2× speedup** over the
 generic context path, confirming the layered optimization claim<sup id="ref-36">[36](#fn-36)</sup>.
 
-### 6.1 What I could not run
+#### <a id="sec-6-1"></a>6.1 What I could not run [↑](#toc)
 
 - **N=2²⁰ batch verify (`bench_verify --n 1048576`)** — needs ~9 GiB
   RAM; container has 8 GiB<sup id="ref-37">[37](#fn-37)</sup>.
@@ -440,23 +516,26 @@ generic context path, confirming the layered optimization claim<sup id="ref-36">
   replication (~9 GiB peak working set).
 - **`--with-tree` materialised-tree signing** — needs 8 GiB just for
   the HVC tree at τ=20.
-- **Sage-based parameter regeneration** — no SageMath installed. The
-  committed `parameter/summary.txt` and
-  `chipmunk_original_security_summary.txt` are the auditable
-  artifacts.
+- ~~**Sage-based parameter regeneration** — no SageMath installed.~~
+  **Resolved during this review.** SageMath 9.5 installed via
+  `apt-get install --no-install-recommends sagemath`; all three
+  Sage scripts re-run with outputs matching the committed
+  [`summary.txt`](../submission/code/parameter/summary.txt) /
+  [`chipmunk_summary.txt`](../submission/code/parameter/chipmunk_summary.txt) /
+  [`chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt)
+  (see §5.6 below)<sup id="ref-51b">[51](#fn-51)</sup>.
 
 None of these gaps undermine the central claim. Every measurement
 that fits in 8 GiB tracks the paper to within a thread-count factor,
 and every deterministic size figure reproduces exactly.
 
----
 
-## 7. Performance internals — what is actually fast
+### <a id="sec-7"></a>7. Performance internals — what is actually fast [↑](#toc)
 
 The Rust port has three identifiable layers of careful optimization,
 all of them benchmarkable in isolation.
 
-### 7.1 Gaussian CDT sampler (`lemur-rs/src/sample.rs`)
+#### <a id="sec-7-1"></a>7.1 Gaussian CDT sampler (`lemur-rs/src/sample.rs`) [↑](#toc)
 
 1. **Indexed bucket dispatch** (`sample_cdt_indexed` + `cdt_hi` table
    emitted by `gen_tables.py`): the top 9 bits of a 32-bit sample
@@ -470,7 +549,7 @@ all of them benchmarkable in isolation.
 3. **Stack-allocated buffers** sized to `MAX_D = 256`, zero-alloc
    on the hot path.
 
-### 7.2 NTT — two backends (`ntt.rs` + `aux_ntt.rs`)
+#### <a id="sec-7-2"></a>7.2 NTT — two backends (`ntt.rs` + `aux_ntt.rs`) [↑](#toc)
 
 Lemur has two ring moduli with different NTT properties:
 
@@ -485,7 +564,7 @@ multiplication — that's the only place Python is not a faithful
 performance reference, and the byte-equality on `vectors` proves the
 two compute the same signed coefficients.
 
-### 7.3 Rayon parallelism (`lemur-rs/src/lemur.rs:lemur_aggregate`)
+#### <a id="sec-7-3"></a>7.3 Rayon parallelism (`lemur-rs/src/lemur.rs:lemur_aggregate`) [↑](#toc)
 
 Three concurrent map-reduce passes<sup id="ref-40">[40](#fn-40)</sup>:
 
@@ -500,12 +579,12 @@ Three concurrent map-reduce passes<sup id="ref-40">[40](#fn-40)</sup>:
 commutative. Thread scaling is near-ideal: 24-thread paper timings
 become ~2.5× longer on 11 threads, within 15 % of linear.
 
----
 
-## 8. Parameter regeneration flow
+### <a id="sec-8"></a>8. Parameter regeneration flow [↑](#toc)
 
-Source of truth: `parameter/lemur_param.sage` → outputs
-`parameter/summary.txt`. The flow downstream is **manual**:
+Source of truth: [`parameter/lemur_param.sage`](../submission/code/parameter/lemur_param.sage)
+→ outputs [`parameter/summary.txt`](../submission/code/parameter/summary.txt).
+The flow downstream is **manual**:
 
 ```
 lemur_param.sage           (Sage; uses estimator/ + msis_estimator/)
@@ -544,9 +623,8 @@ Also note: `parameter/summary.txt`'s **first column is `secpar`**
 scanning the file may see "128" in column 1 and conflate it with
 `d=128`; this is the same trap the §7.1 worked example sets.
 
----
 
-## 9. Related work — verified facts
+### <a id="sec-9"></a>9. Related work — verified facts [↑](#toc)
 
 The per-reference taxonomy that backs this section was assembled
 during the original review session (notes file lives outside the
@@ -557,41 +635,42 @@ additional discoveries:
 
 | Ref | Paper | Verified claim |
 | --- | --- | --- |
-| [3] | BLS '01 | 48-byte sigs, 96-byte aggregates; pairing-based; deployed in Ethereum/Dfinity; not PQ<sup id="ref-43">[43](#fn-43)</sup> |
-| [7] | Drake et al. '25 (eprint 2025/055)<sup id="ref-44">[44](#fn-44)</sup> | Hash-based: Winternitz + Merkle + pqSNARK. Targets < 4 KiB sigs for Ethereum PQ. SNARK is the aggregation mechanism. **Has 2025+ successors not in Lemur's bibliography:** LeanSig (eprint 2025/1332)<sup id="ref-45">[45](#fn-45)</sup>, HAPPIER (LightSec 2025)<sup id="ref-46">[46](#fn-46)</sup>. |
-| [9] | Squirrel '22 (eprint 2022/694)<sup id="ref-47">[47](#fn-47)</sup> | First synchronized lattice multi-sig. Ring-SIS. ROM, rogue-key safe. |
-| [8] | Chipmunk '23 (eprint 2023/1820)<sup id="ref-48">[48](#fn-48)</sup> | 5.6× smaller aggregate than Squirrel. **Claimed** ~136 KB for 8192 signers at 112-bit security. Lemur's recomputation: actually 22.8–39.4 bits of core-SVP security across cells<sup id="ref-4d">[4](#fn-4)</sup>; the "~40-bit" headline is max-over-instances. |
-| [11] | Hint-MLWE '23 (eprint 2023/623)<sup id="ref-49">[49](#fn-49)</sup> | MLWE with bounded noisy hints; efficient reduction to standard MLWE. Originally for ZK proofs; Lemur extends to **Dual** Hint-MLWE with two real differences: (a) noise-free hints (vs `z_i = c_i·s + y_i` in Kim et al.) and (b) dual-sided secret placement (`T = SA`, `Z = HS` over the *same* `S`). |
+| [3] | [BLS '01](https://link.springer.com/chapter/10.1007/3-540-45682-1_30) | 48-byte sigs, 96-byte aggregates; pairing-based; deployed in Ethereum/Dfinity; not PQ<sup id="ref-43">[43](#fn-43)</sup> |
+| [7] | [Drake et al. '25](https://eprint.iacr.org/2025/055)<sup id="ref-44">[44](#fn-44)</sup> | Hash-based: Winternitz + Merkle + pqSNARK. Targets < 4 KiB sigs for Ethereum PQ. SNARK is the aggregation mechanism. **Has 2025+ successors not in Lemur's bibliography:** [LeanSig](https://eprint.iacr.org/2025/1332)<sup id="ref-45">[45](#fn-45)</sup>, [HAPPIER](https://link.springer.com/chapter/10.1007/978-3-032-15541-2_1)<sup id="ref-46">[46](#fn-46)</sup>. |
+| [9] | [Squirrel '22](https://eprint.iacr.org/2022/694)<sup id="ref-47">[47](#fn-47)</sup> | First synchronized lattice multi-sig. Ring-SIS. ROM, rogue-key safe. |
+| [8] | [Chipmunk '23](https://eprint.iacr.org/2023/1820)<sup id="ref-48">[48](#fn-48)</sup> | 5.6× smaller aggregate than Squirrel. **Claimed** ~136 KB for 8192 signers at 112-bit security. Lemur's recomputation: actually 22.8–39.4 bits of core-SVP security across cells<sup id="ref-4d">[4](#fn-4)</sup>; the "~40-bit" headline is max-over-instances. |
+| [11] | [Hint-MLWE '23](https://eprint.iacr.org/2023/623)<sup id="ref-49">[49](#fn-49)</sup> | MLWE with bounded noisy hints; efficient reduction to standard MLWE. Originally for ZK proofs; Lemur extends to **Dual** Hint-MLWE with two real differences: (a) noise-free hints (vs `z_i = c_i·s + y_i` in Kim et al.) and (b) dual-sided secret placement (`T = SA`, `Z = HS` over the *same* `S`). |
 | [13] | Lyubashevsky-Micciancio '08 | Compact lattice OTS — the conceptual root of Chipmunk's KOTS. Statistical unforgeability argument. Lemur swaps to computational. |
-| [2] | Boneh-Kim '20<sup id="ref-50">[50](#fn-50)</sup> | Lattice aggregate sigs based on standard SIS. Two variants: public-agg OTS (logarithmic aggregate) + interactive many-time. **Non-synchronized — a competing paradigm, not an ancestor.** Lemur §1.2 places it in the KOTS ancestor line, which is a placement the reader should question. |
+| [2] | [Boneh-Kim '20](https://crypto.stanford.edu/~skim13/agg_ots.pdf)<sup id="ref-50">[50](#fn-50)</sup> | Lattice aggregate sigs based on standard SIS. Two variants: public-agg OTS (logarithmic aggregate) + interactive many-time. **Non-synchronized — a competing paradigm, not an ancestor.** Lemur §1.2 places it in the KOTS ancestor line, which is a placement the reader should question. |
 | [4] | BDS08 '08 | Standard Merkle traversal: `O(τ)` state vs `O(2^τ)`. Used unchanged by Lemur's stateful signer. |
 | [15] | MOR '01 (accountable-subgroup multisig) | Appears only in the `[10, 15]` opening pair and bibliography. **Bibliography filler**, not load-bearing for Lemur<sup id="ref-20b">[20](#fn-20)</sup>. |
 
-### 9.1 Missing references the paper *should* have engaged with
+#### <a id="sec-9-1"></a>9.1 Missing references the paper *should* have engaged with [↑](#toc)
 
 Three works exist in adjacent paradigms, all dated 2024 (well before
 Lemur's 2026 submission), all uncited:
 
-- **Aardal-Aranha-Boudgoust-Kolby-Takahashi**, "Aggregating Falcon
-  Signatures with LaBRADOR", **CRYPTO 2024**, eprint 2024/311<sup id="ref-8c">[8](#fn-8)</sup>.
-  Constructs aggregation of standard Falcon signatures using
-  LaBRADOR (a lattice-based proof system). Defines an entire
-  paradigm Lemur's §1 trichotomy does not contain — PQ-sig +
-  lattice-PoK.
-- **Anada-Fukumitsu-Hasegawa**, "Tightly Secure Lattice-Based
-  Synchronized Aggregate Signature in Standard Model", **ICISC
-  2024** (Springer LNCS 15596)<sup id="ref-9d">[9](#fn-9)</sup>. A direct sibling of Lemur in the
+- [**Aardal-Aranha-Boudgoust-Kolby-Takahashi, "Aggregating Falcon
+  Signatures with LaBRADOR"**](https://eprint.iacr.org/2024/311),
+  **CRYPTO 2024**<sup id="ref-8c">[8](#fn-8)</sup>. Constructs aggregation of standard Falcon
+  signatures using LaBRADOR (a lattice-based proof system). Defines
+  an entire paradigm Lemur's §1 trichotomy does not contain — PQ-sig
+  + lattice-PoK.
+- [**Anada-Fukumitsu-Hasegawa, "Tightly Secure Lattice-Based
+  Synchronized Aggregate Signature in Standard Model"**](https://link.springer.com/chapter/10.1007/978-981-96-5566-3_4),
+  **ICISC 2024**<sup id="ref-9d">[9](#fn-9)</sup>. A direct sibling of Lemur in the
   synchronized lattice column, with a **strictly stronger security
   model** (standard, not ROM). Apples-to-apples comparison would
   require either Lemur lifting to standard-model security or
   acknowledging that Anada is tighter on that axis.
-- **Hash+SNARK ecosystem successors to [7]**: LeanSig (eprint
-  2025/1332)<sup id="ref-45b">[45](#fn-45)</sup>, HAPPIER (LightSec 2025)<sup id="ref-46b">[46](#fn-46)</sup>. Both extend Drake et al.'s
+- **Hash+SNARK ecosystem successors to [7]:**
+  [LeanSig](https://eprint.iacr.org/2025/1332)<sup id="ref-45b">[45](#fn-45)</sup>,
+  [HAPPIER](https://link.springer.com/chapter/10.1007/978-3-032-15541-2_1)<sup id="ref-46b">[46](#fn-46)</sup>. Both extend Drake et al.'s
   framework. Their existence post-dates Lemur's submission but
   matters for assessing whether the field has moved past Drake et
   al.'s "heavy proof machinery" framing.
 
-### 9.2 Notable framing softening worth flagging
+#### <a id="sec-9-2"></a>9.2 Notable framing softening worth flagging [↑](#toc)
 
 - **"Order of magnitude smaller KOTS" (§1.1)** — actual KOTS shrink
   vs Chipmunk is **4.64× at `N=2¹⁰`** (26 KB → 5.6 KB in Table 1)
@@ -610,16 +689,17 @@ Lemur's 2026 submission), all uncited:
   for Ethereum?" gets no answer.
 
 The "Chipmunk security recomputation to 22.8–39.4 bits" is the
-central field-level finding of this paper. It is reproducible by
-running `parameter/chipmunk_original.sage` (needs SageMath, not
-installed in this container), but the output is committed in
-`parameter/chipmunk_original_security_summary.txt`. The data is
-convincing as evidence Chipmunk's parameters miss their claimed
-security level by 70+ bits in the median case.
+central field-level finding of this paper. **Independently
+reproduced during this review:**
+[`sage chipmunk_original.sage`](../submission/code/parameter/chipmunk_original.sage)
+completes in ~2m45s on this host and produces a
+[`chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt)
+that is **byte-identical** to the committed file<sup id="ref-51c">[51](#fn-51)</sup>. The data is convincing as evidence
+Chipmunk's parameters miss their claimed security level by 70+ bits
+in the median case.
 
----
 
-## 10. Open questions and limitations of this review
+### <a id="sec-10"></a>10. Open questions and limitations of this review [↑](#toc)
 
 - **Security proof not formally audited.** The 128-bit claim rests
   on the lattice estimator [1] and the MSIS estimator. I did not
@@ -684,9 +764,8 @@ security level by 70+ bits in the median case.
   `parameter/summary.txt` (τ ∈ {12, 16, 24}, N ∈ {2¹⁵, 2¹⁷, 2²⁰})
   are predicted, not exercised end-to-end.
 
----
 
-## 11. Reproduction recipe
+### <a id="sec-11"></a>11. Reproduction recipe [↑](#toc)
 
 In the exact environment used for this review:
 
@@ -727,15 +806,17 @@ Items 2–3 are sufficient to confirm the *correctness* claim. Item 4
 is needed to confirm the *timing* claim. Item 5 is needed only for
 the `N=2²⁰` verify cell.
 
----
 
-## Footnotes
+### <a id="footnotes"></a>Footnotes [↑](#toc)
 
 Each footnote cites the source verified during the fact-checking
-round. Sources are either a paper / file location (paper line N
-refers to a `pdftotext -layout submission/report.pdf` dump),
-`file:line` for the in-repo code, or an external IACR / Springer
-URL for related work.
+round. Sources are either a paper location (cited by section,
+theorem/lemma number, definition, figure, or table caption — the
+identifiers the paper uses), an in-repo `file:line` for the code,
+or an external IACR / Springer URL for related work. Some footnotes
+quote historical "PDF line N" attributions from `pdftotext` dumps
+used by earlier audits — newer work should not rely on those line
+numbers; refer to the citation's section/theorem ID instead.
 
 <a id="fn-1"></a>**1.** Reproduced by `submission/code/parameter/rice_sizes.py`
 output (Table 2 column / Table 5 corresponding cells); also exact
@@ -1012,11 +1093,24 @@ from Lattices." Stanford TR 2020.
 Two schemes: public-aggregation OTS (anyone can aggregate; aggregate
 size *logarithmic* in number of sigs) and interactive many-time. [↩](#ref-50)
 
----
+<a id="fn-51"></a>**51.** Re-run on this host with SageMath 9.5
+(`sudo apt-get install -y --no-install-recommends sagemath`). All
+three estimator scripts in `submission/code/parameter/` produce
+outputs that match the committed `.txt` files. (a)
+`chipmunk_original.sage` → `chipmunk_original_security_summary.txt`:
+byte-identical (`diff` empty), 2m45s. (b) `chipmunk_param.sage` →
+`chipmunk_summary.txt`: byte-identical, 13s. (c) `lemur_param.sage`
+→ `summary.txt`: OOM in a single end-to-end run on 8 GiB; ran
+chunked as 16 sub-runs over `(τ, N) ∈ {12,16,20,24} × {1024, 32768,
+131072, 1048576}`, ~25 min total; resulting 16 data rows are
+field-identical to the committed `summary.txt` (verified by Python
+diff keyed on `(τ, N)`). [↩](#ref-51) [↩](#ref-51b) [↩](#ref-51c)
+
 
 *Footnotes were generated by a fact-check round (three lens-specific
-fact-checker subagents plus three reviewer subagents). For the
-per-claim ledger, see `tmp/fact-checking/fact_checker_{1,2,3}.md`
-and the reviewer reports in the same directory. 197 atomic claims
-were checked; this footnote set covers the load-bearing source
-citations.*
+fact-checker subagents plus three reviewer subagents), then extended
+with footnote 51 after the Sage parameter-estimator outputs were
+independently reproduced from source. For the per-claim ledger, see
+`tmp/fact-checking/fact_checker_{1,2,3}.md` and the reviewer reports
+in the same directory. 197 atomic claims were checked; this footnote
+set covers the load-bearing source citations.*
