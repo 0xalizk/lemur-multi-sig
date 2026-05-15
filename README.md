@@ -1,8 +1,12 @@
-## 🦞 `712.3k` tokens  🕒 `~2h45m` walltime
+<br>
 
-## Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
+### 🦞 `712.3k` tokens  🕒 `~2h45m` walltime
 
-### What the paper delivers
+<br>
+
+### Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
+
+### What the paper delivers: 
 
 1. **Lemur is a synchronized post-quantum multi-signature** that
    non-interactively aggregates `N` signatures generated for the same
@@ -27,7 +31,7 @@
    roughly double in size; Lemur at the same target is ~2.1× smaller
    at `N = 2²⁰`.
 
-### What the assessment found
+### What the assessment found: 
 
 1. **Implementation matches the paper.** Every deterministic claim
    reproduces: aggregate sizes (201.2 / 283.5 / 394.4 KB exact),
