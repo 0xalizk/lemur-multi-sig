@@ -23,7 +23,7 @@
 
 <br>
 
-### Lemur — [paper](submission/report.pdf), [code](submission/code/), and [review](assessment/review.md)
+### [Review](assessment/review.md) of Lemur — [paper](submission/report.pdf) and [code](submission/code/) 
 
 <br>
 
