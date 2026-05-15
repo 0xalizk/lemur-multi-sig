@@ -1,6 +1,6 @@
 <br>
 
-### 🦞 `712.3k` tokens  🕒 `~2h45m` walltime
+### 🦞 `712.3k` tokens  🕒 `~2h45m` 
 
 <br>
 
