@@ -8,8 +8,8 @@ tricks, and pitfalls to avoid when working with the Lemur artifact._
 - Raw audit transcripts behind [`../review.md`](../review.md):
   - [`checkup_0/`](checkup_0/) paper audit (theory / implementation / field lenses)
   - [`checkup_1/`](checkup_1/) per-claim fact-check on `review.md` (197 atomic claims)
-  - [`checkup_2/`](checkup_2/) repo-wide integrity sweep. Each round had an independent reviewer
-pass.
+  - [`checkup_2/`](checkup_2/) repo-wide integrity sweep
+  - [`checkup_4_final/`](checkup_4_final/) final cross-consistency sweep of `review.md` / `README.md` / artifact state. Each round had an independent reviewer pass.
 
 
 - Minor / non-load-bearing
