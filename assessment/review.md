@@ -8,37 +8,37 @@
 
 <table><tr><td valign="top">
 
-<a href="#sec-1" style="text-decoration:none">1. Executive verdict</a><br>
-<a href="#sec-2" style="text-decoration:none">2. Field placement and paradigm</a><br>
-<a href="#sec-3" style="text-decoration:none">3. What the paper proves and what it does not</a><br>
-<a href="#sec-4" style="text-decoration:none">4. Correctness audit — Python reference vs. paper</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-1" style="text-decoration:none">4.1 KOTS — paper Figure 3</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-2" style="text-decoration:none">4.2 HVC — paper Figure 4 + Appendix B</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-3" style="text-decoration:none">4.3 Lemur composition — paper Figure 5</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-4" style="text-decoration:none">4.4 Audit checkpoints</a><br>
-<a href="#sec-5" style="text-decoration:none">5. Implementation testing</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-1" style="text-decoration:none">5.1 Rust test suite</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-2" style="text-decoration:none">5.2 Aggregate-signature size — `lemur sizes`</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-3" style="text-decoration:none">5.3 Rice-encoded sizes for larger N</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-4" style="text-decoration:none">5.4 Python ↔ Rust byte-equivalence</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-5" style="text-decoration:none">5.5 Chipmunk security recomputation</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-6" style="text-decoration:none">5.6 Sage parameter-estimator outputs</a>
+1. Executive verdict<br>
+2. Field placement and paradigm<br>
+3. What the paper proves and what it does not<br>
+4. Correctness audit — Python reference vs. paper<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 KOTS — paper Figure 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 HVC — paper Figure 4 + Appendix B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4.3 Lemur composition — paper Figure 5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4.4 Audit checkpoints<br>
+5. Implementation testing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.1 Rust test suite<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.2 Aggregate-signature size — `lemur sizes`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.3 Rice-encoded sizes for larger N<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.4 Python ↔ Rust byte-equivalence<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.5 Chipmunk security recomputation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;5.6 Sage parameter-estimator outputs
 
 </td><td valign="top">
 
-<a href="#sec-6" style="text-decoration:none">6. Benchmark measurements vs paper</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-6-1" style="text-decoration:none">6.1 What I could not run</a><br>
-<a href="#sec-7" style="text-decoration:none">7. Performance internals</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-1" style="text-decoration:none">7.1 Gaussian CDT sampler</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-2" style="text-decoration:none">7.2 NTT — two backends</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-3" style="text-decoration:none">7.3 Rayon parallelism</a><br>
-<a href="#sec-8" style="text-decoration:none">8. Parameter regeneration flow</a><br>
-<a href="#sec-9" style="text-decoration:none">9. Related work — verified facts</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-1" style="text-decoration:none">9.1 Missing references</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-2" style="text-decoration:none">9.2 Notable framing softening</a><br>
-<a href="#sec-10" style="text-decoration:none">10. Open questions and limitations</a><br>
-<a href="#sec-11" style="text-decoration:none">11. Reproduction recipe</a><br>
-<a href="#footnotes" style="text-decoration:none">Footnotes</a>
+6. Benchmark measurements vs paper<br>
+&nbsp;&nbsp;&nbsp;&nbsp;6.1 What I could not run<br>
+7. Performance internals<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7.1 Gaussian CDT sampler<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7.2 NTT — two backends<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7.3 Rayon parallelism<br>
+8. Parameter regeneration flow<br>
+9. Related work — verified facts<br>
+&nbsp;&nbsp;&nbsp;&nbsp;9.1 Missing references<br>
+&nbsp;&nbsp;&nbsp;&nbsp;9.2 Notable framing softening<br>
+10. Open questions and limitations<br>
+11. Reproduction recipe<br>
+Footnotes
 
 </td></tr></table>
 
