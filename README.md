@@ -1,19 +1,6 @@
-# Lemur — paper, code, and independent assessment
+🦞 `712.3k tokens` 🕒 `~2h45m walltime`
 
-`712.3k tokens` `~2 h 45 m walltime`
-
-This repository contains three things:
-
-- **[`submission/`](submission/)** — the artifact as it was submitted:
-  the [paper PDF](submission/report.pdf) (24 pages, anonymous ACM CCS
-  submission for 2026) and the
-  [code](submission/code/) (Python reference, Rust performance port,
-  Sage parameter estimator).
-- **[`assessment/review.md`](assessment/review.md)** — a technical
-  assessment of the paper together with independent validation of the
-  implementation and the Sage parameter estimator.
-
-## Headlines
+# Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment]((assessment/review.md)
 
 ### What the paper delivers
 
