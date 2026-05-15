@@ -47,7 +47,7 @@
                               Chipmunk '23
                                   [8]
                                     │
-                              🦞 <b>Lemur '26</b>
+                              🐒 <b>Lemur '26</b>
 </pre>
 
 ### What the paper delivers: 
