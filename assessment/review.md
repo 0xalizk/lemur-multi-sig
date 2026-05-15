@@ -8,7 +8,7 @@
 
 <table><tr><td valign="top">
 
-<a href="#sec-1" style="text-decoration:none">1. Executive verdict</a><br>
+<a href="#sec-1" style="text-decoration:none">1. TLDR</a><br>
 <a href="#sec-2" style="text-decoration:none">2. Field placement and paradigm</a><br>
 <a href="#sec-3" style="text-decoration:none">3. What the paper proves and what it does not</a><br>
 <a href="#sec-4" style="text-decoration:none">4. Correctness audit — Python reference vs. paper</a><br>
@@ -81,7 +81,7 @@ empirical measurements by the command that produced them.
 </details>
 
 
-### <a id="sec-1"></a>1. Executive verdict [↑](#toc)
+### <a id="sec-1"></a>1. TLDR [↑](#toc)
 
 **The implementation matches the paper.** Every deterministic
 quantity I checked (aggregate-signature sizes at N ∈ {2¹⁰, 2¹⁵, 2²⁰}<sup id="ref-1">[1](#fn-1)</sup>,
@@ -99,7 +99,7 @@ security-estimation rectification of Chipmunk (from claimed 112-bit
 to actual 22.8–39.4-bit range under modern lattice estimation)<sup id="ref-4">[4](#fn-4)</sup> is,
 on its own, a useful service to the field.
 
-**Compelling? Yes, with three caveats.** (1) The Table 1 comparison
+**Compelling results with three caveats.** (1) The Table 1 comparison
 puts Rice-encoded Lemur against raw-encoded Chipmunk, a ~14%
 asymmetry disclosed in the caption but not on the column headers<sup id="ref-5">[5](#fn-5)</sup>.
 (2) The "order of magnitude" KOTS shrink against Chipmunk is
