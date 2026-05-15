@@ -1,10 +1,10 @@
 <br>
 
-<details><summary><b> 🦞 748k tokens  🕒 ~2h45m </b></summary>
+<details><summary><b> &nbsp; 748k tokens 🦞  &nbsp;&nbsp;&nbsp;  ~2h45m 🕒 </b></summary>
 <br>
-🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
+🟩 benchmarks rust/py · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup <br><br>
 
-| | Activity | Wall time |
+| |  |  |
 | :-: | --- | ---: |
 | ⬜ | Toolchain install (rustup + Python + Sage incl. retries) | ~15 min |
 | 🟩 | Cargo build + 52-test suite | ~2 min |
