@@ -3,7 +3,7 @@
 <details>
 <summary>
 
-### 🦞 `712.3k` tokens  🕒 `~2h45m`
+** 🦞 `712.3k` tokens  🕒 `~2h45m` **
 
 </summary>
 
