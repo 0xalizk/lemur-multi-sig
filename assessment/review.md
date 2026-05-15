@@ -90,14 +90,17 @@ agreement) reproduces exactly. Every machine-dependent quantity
 (timings) tracks the paper to within ~15 % of the expected
 thread-count slowdown.
 
-**The paradigm contribution is modest but the engineering payoff is
-real.** Lemur stays inside the Squirrel/Chipmunk KOTS+HVC blueprint<sup id="ref-2">[2](#fn-2)</sup>;
-it changes two of the four blocks (KOTS and HVC). At paper-scale
-`N=2²⁰` the aggregate is ~2.1× smaller than Chipmunk *at corrected
-128-bit security*; at `N=2¹⁰` the ratio shrinks to 1.18×<sup id="ref-3">[3](#fn-3)</sup>. The
-security-estimation rectification of Chipmunk (from claimed 112-bit
-to actual 22.8–39.4-bit range under modern lattice estimation)<sup id="ref-4">[4](#fn-4)</sup> is,
-on its own, a useful service to the field.
+**The improvements over the status quo are real.** Lemur builds on
+the established Squirrel/Chipmunk KOTS+HVC blueprint<sup id="ref-2">[2](#fn-2)</sup> and refines
+two of its four blocks: the KOTS gets a new computational
+unforgeability argument under Dual Hint-MLWE (reduced from standard
+MLWE), and the HVC moves from Ring-SIS to Module-SIS with a matrix
+commitment domain. At paper-scale `N=2²⁰` the aggregate is
+**~2.1× smaller than Chipmunk** at corrected 128-bit security; at
+`N=2¹⁰` the ratio shrinks to 1.18×<sup id="ref-3">[3](#fn-3)</sup>. The recomputation of
+Chipmunk's actual security (claimed 112-bit, actual 22.8–39.4-bit
+range under modern lattice estimation)<sup id="ref-4">[4](#fn-4)</sup> is, on its own, a useful
+service to the field.
 
 **Compelling results with three caveats.** (1) The Table 1 comparison
 puts Rice-encoded Lemur against raw-encoded Chipmunk, a ~14%
