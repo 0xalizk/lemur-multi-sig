@@ -27,7 +27,7 @@
 
 <br>
 
-```
+<pre>
                             Multi-signatures
                                   │
    ┌────────────────┬─────────────┴──────────────┬─────────────────┐
@@ -47,8 +47,8 @@
                               Chipmunk '23
                                   [8]
                                     │
-                                Lemur '26
-```
+                              🦞 <b>Lemur '26</b>
+</pre>
 
 ### What the paper delivers: 
 
