@@ -1,5 +1,7 @@
 # Lemur — paper, code, and independent assessment
 
+`712.3k tokens` `~2 h 45 m walltime`
+
 This repository contains three things:
 
 - **[`submission/`](submission/)** — the artifact as it was submitted:
@@ -112,12 +114,11 @@ above sums only the actively-running compute. Subagent batches were
 parallel, so the wall-clock contribution is the slowest agent per
 batch, not the sum across agents in a batch.)
 
-**Tokens consumed:** approximately **700 k tokens** across the full
-session (best-effort estimate; the live counter is available via
-the `/context` command). A `/context` snapshot taken roughly halfway
-through showed 249.9 k / 1 M; the second half added the
-audit/review/fact-check rounds, the Sage validation, and the
-readability/restructure passes on `review.md`.
+**Tokens consumed:** **712.3 k / 1 M context (71 %)** at end of
+session (live `/context` reading). Roughly 35 % of those were
+consumed by the audit/review/fact-check rounds and the Sage
+validation phase, after a midway `/context` snapshot showed
+249.9 k / 1 M.
 
 **Hardware:** Docker container (`node:22-slim`, Debian bookworm),
 aarch64 Linux, **11 CPU threads, 8 GiB RAM**, no GPU. The 8 GiB
