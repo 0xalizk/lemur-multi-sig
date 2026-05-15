@@ -1,6 +1,6 @@
 🦞 `712.3k tokens` 🕒 `~2h45m walltime`
 
-# Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment]((assessment/review.md)
+# Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
 
 ### What the paper delivers
 
@@ -71,8 +71,9 @@ verification, footnotes citing paper sections / code lines /
 external papers, and reproduction recipe — see
 [`assessment/review.md`](assessment/review.md).
 
-<details>
-<summary><strong>Session resources</strong></summary>
+<br> 
+
+**The Crunch:**
 
 🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
 
