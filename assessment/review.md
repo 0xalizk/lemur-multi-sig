@@ -56,11 +56,19 @@ in this document are relative to the repo root.
 **Hardware:** aarch64 Linux, **11 CPU threads, 8 GiB RAM**
 (paper baseline: 24 threads).
 
-**Source-of-truth files for verifying claims below:**
+**Source of truth.** Three things, in priority order:
 
-- [`submission/code/README.md`](../submission/code/README.md) — artifact README.
-- [`submission/code/parameter/summary.txt`](../submission/code/parameter/summary.txt) — Sage estimator output per parameter cell.
-- [`submission/code/parameter/chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt) — Chipmunk's published parameters under modern Dilithium-style estimation; data behind the "~40-bit Chipmunk" finding.
+1. **The paper** itself — for what is *claimed*.
+2. **The code** — for what is *implemented*.
+3. **Independent execution** — running the code (and the Sage estimator
+   scripts) locally and observing the outputs. The reproduction
+   recipe is in §11; the Sage re-runs are in §5.6.
+
+The committed `.txt` files in [`submission/code/parameter/`](../submission/code/parameter/)
+are *derived* outputs of the Sage scripts there; they're convenient
+quick references, not primary sources. The body of this review cites
+the paper by section/theorem/figure, the code by `file:line`, and
+empirical measurements by the command that produced them.
 
 
 ### <a id="sec-1"></a>1. Executive verdict [↑](#toc)
