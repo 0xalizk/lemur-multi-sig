@@ -762,7 +762,11 @@ in the median case.
 
 ### <a id="sec-11"></a>11. Reproduction recipe [↑](#toc)
 
-In the exact environment used for this review:
+Reproduced on a Debian bookworm container (Node 22 base image),
+aarch64 Linux, 11 CPU threads, 8 GiB RAM; passwordless `sudo`. No
+Rust, Python, or SageMath in the base image — the first block
+installs them. A similar Debian/Ubuntu host with `curl`, `git`,
+`sudo`, and ~12 GiB free disk should reproduce the recipe identically.
 
 ```sh
 # 1. Toolchain (one-time)
