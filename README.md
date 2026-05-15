@@ -4,7 +4,7 @@
 
 <br>
 
-### Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
+### Lemur — [paper](submission/report.pdf), [code](submission/code/), and [review](assessment/review.md)
 
 <br>
 
