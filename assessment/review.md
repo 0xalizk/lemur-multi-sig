@@ -45,6 +45,11 @@
 </sub></sub>
 
 
+**This is a technical assessment of the
+[Lemur paper](../submission/report.pdf) and independent validation
+of its [implementation](../submission/code/) and
+[parameter estimator](../submission/code/parameter/).**
+
 <details>
 <summary><strong>Notes</strong></summary>
 
