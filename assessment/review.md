@@ -45,6 +45,9 @@
 </sub></sub>
 
 
+<details>
+<summary><strong>Notes</strong></summary>
+
 **Paper:** [`submission/report.pdf`](../submission/report.pdf) —
 *Lemur: Scalable Post-Quantum Synchronized Multi-Signatures*,
 24 pages, anonymous ACM CCS submission for 2026.
@@ -69,6 +72,8 @@ are *derived* outputs of the Sage scripts there; they're convenient
 quick references, not primary sources. The body of this review cites
 the paper by section/theorem/figure, the code by `file:line`, and
 empirical measurements by the command that produced them.
+
+</details>
 
 
 ### <a id="sec-1"></a>1. Executive verdict [↑](#toc)
