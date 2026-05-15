@@ -1,6 +1,30 @@
 <br>
 
-### 🦞 `712.3k` tokens  🕒 `~2h45m` 
+<details>
+<summary>
+
+### 🦞 `712.3k` tokens  🕒 `~2h45m`
+
+</summary>
+
+🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
+
+| | Activity | Wall time |
+| :-: | --- | ---: |
+| ⬜ | Toolchain install (rustup + Python + Sage incl. retries) | ~15 min |
+| 🟩 | Cargo build + 52-test suite | ~2 min |
+| 🟩 | `lemur sizes` + `rice_sizes.py` | < 1 s |
+| 🟩 | Python ↔ Rust `vectors` byte-equivalence check | ~10 s |
+| 🟩 | `bench --fast` (multiple runs across session) | ~50 min |
+| 🟩 | `bench_verify --zero-fixture` at N ∈ {1024, 8192, 32768} | ~5 min |
+| 🟦 | Sage `chipmunk_param.sage` | 13 s |
+| 🟦 | Sage `chipmunk_original.sage` | 2 min 45 s |
+| 🟦 | Sage `lemur_param.sage` (chunked by 16 (τ, N) cells) | ~25 min |
+| 🟪 | 6 audit subagents (3 audit + 3 review, run in parallel batches) | ~25 min |
+| 🟪 | 6 fact-check subagents (3 FC + 3 review, run in parallel batches) | ~30 min |
+|   | **Total compute walltime** | **~2 h 45 min** |
+
+</details>
 
 <br>
 
@@ -77,25 +101,3 @@ verification, footnotes citing paper sections / code lines /
 external papers, and reproduction recipe — see
 [`assessment/review.md`](assessment/review.md).
 
-<br> 
-
-**The Crunch:**
-
-🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
-
-| | Activity | Wall time |
-| :-: | --- | ---: |
-| ⬜ | Toolchain install (rustup + Python + Sage incl. retries) | ~15 min |
-| 🟩 | Cargo build + 52-test suite | ~2 min |
-| 🟩 | `lemur sizes` + `rice_sizes.py` | < 1 s |
-| 🟩 | Python ↔ Rust `vectors` byte-equivalence check | ~10 s |
-| 🟩 | `bench --fast` (multiple runs across session) | ~50 min |
-| 🟩 | `bench_verify --zero-fixture` at N ∈ {1024, 8192, 32768} | ~5 min |
-| 🟦 | Sage `chipmunk_param.sage` | 13 s |
-| 🟦 | Sage `chipmunk_original.sage` | 2 min 45 s |
-| 🟦 | Sage `lemur_param.sage` (chunked by 16 (τ, N) cells) | ~25 min |
-| 🟪 | 6 audit subagents (3 audit + 3 review, run in parallel batches) | ~25 min |
-| 🟪 | 6 fact-check subagents (3 FC + 3 review, run in parallel batches) | ~30 min |
-|   | **Total compute walltime** | **~2 h 45 min** |
-
-</details>
