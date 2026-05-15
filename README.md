@@ -1,6 +1,6 @@
 🦞 `712.3k tokens` 🕒 `~2h45m walltime`
 
-# Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
+## Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
 
 ### What the paper delivers
 
