@@ -1,6 +1,6 @@
 <br>
 
-<details><summary><b> 🦞 712.3k tokens  🕒 ~2h45m </b></summary>
+<details><summary><b> 🦞 748k tokens  🕒 ~2h45m </b></summary>
 <br>
 🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
 
@@ -113,6 +113,8 @@
    parameters at the 128-bit core-SVP level. Community-standard
    practice for lattice multi-sigs (Dilithium does the same) but
    worth flagging.
+<br>
 
-### [`Full Review`](assessment/review.md)
+## [`Full Review`](assessment/review.md)
 
+<br>
