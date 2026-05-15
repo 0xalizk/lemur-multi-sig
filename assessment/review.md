@@ -848,7 +848,7 @@ decomposition is explicit in §6 (Lemur composition) and Figure 5. [↩](#ref-2)
 contains 24 rows × 3 RSIS columns. Direct file inspection: min
 22.8 (RSIS3, secpar=112, τ ∈ {21,23,24,26}, N=131072); max 39.4
 (RSIS1/RSIS2, secpar=112, τ=21, N=1024). For secpar=128 rows
-specifically: [23.1, 38.8]. [↩](#ref-4) [↩](#ref-4b) [↩](#ref-4c) [↩](#ref-4d)
+specifically: [23.1, 38.8]. [↩](#ref-4) [↩](#ref-4c) [↩](#ref-4d)
 
 <a id="fn-5"></a>**5.** Paper Table 1 caption (PDF line ~63): "Chipmunk:
 theoretical, from their scripts. Lemur: measured in implementation
