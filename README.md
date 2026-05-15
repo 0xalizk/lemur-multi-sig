@@ -1,6 +1,6 @@
 <br>
 
-<details><summary>** 🦞 `712.3k` tokens  🕒 `~2h45m` **</summary>
+<details><summary><b> 🦞 `712.3k` tokens  🕒 `~2h45m` </b></summary>
 
 🟩 benchmarks (Rust / Python) · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup
 
