@@ -27,6 +27,29 @@
 
 <br>
 
+```
+                            Multi-signatures
+                                  │
+   ┌────────────────┬─────────────┴──────────────┬─────────────────┐
+   │                │                            │                 │
+ Pairing-based   Hash-based +              Lattice-native    PQ-sig + lattice-PoK
+ BLS [3]           SNARKs                                      (Aardal et al.
+ (Ethereum,     [7] Drake '25              ┌──────┴─────┐        2024/311
+  deployed,     LeanSig 2025/1332          │            │      Falcon + LaBRADOR,
+  not PQ)       HAPPIER LightSec'25    Synchronized   Non-synchronized
+                                      (slot schedule)
+                                            │            │
+                                    ┌───────┴────┐   Boneh-Kim '20 [2]
+                                    │            │  (OTS + interactive,
+                              Squirrel '22  Anada et al.   log-size agg)
+                                  [9]       '24 ICISC
+                                    │      (standard model)
+                              Chipmunk '23
+                                  [8]
+                                    │
+                                Lemur '26
+```
+
 ### What the paper delivers: 
 
 1. **Lemur is a synchronized post-quantum multi-signature** that
