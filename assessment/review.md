@@ -45,43 +45,22 @@
 </sub></sub>
 
 
-Paper: *Lemur: Scalable Post-Quantum Synchronized Multi-Signatures*
-(`submission/report.pdf`, 24 pages, anonymous ACM CCS submission for
-2026). All file paths in this document are **relative to the repo
-root** (the directory containing `submission/` and `assessment/`).
+**Paper:** [`submission/report.pdf`](../submission/report.pdf) —
+*Lemur: Scalable Post-Quantum Synchronized Multi-Signatures*,
+24 pages, anonymous ACM CCS submission for 2026.
 
-Artifact: `submission/code/` (Python reference, Rust performance
-port, Sage parameter estimator).
+**Artifact:** [`submission/code/`](../submission/code/) — Python
+reference, Rust performance port, Sage parameter estimator. All paths
+in this document are relative to the repo root.
 
-Hardware used for measurements: aarch64 Linux, **11 CPU threads**,
-**8 GiB RAM** (paper baseline: 24 threads). The run was performed
-inside a Docker container based on `node:22-slim` (Debian bookworm)
-with the repo mounted into a `/workspace`-rooted working directory;
-the container layout is incidental to the findings.
+**Hardware:** aarch64 Linux, **11 CPU threads, 8 GiB RAM**
+(paper baseline: 24 threads).
 
-This document is the consolidated findings record after a primary
-review pass, three lens-specific audit subagents (theory /
-implementation / field-comparison), and three reviewer subagents that
-verified each audit's claims against the source.
+**Source-of-truth files for verifying claims below:**
 
-**In-repo companions:**
-
-- `submission/code/README.md` — the artifact's own README.
-- `submission/code/parameter/summary.txt` — Sage estimator output
-  per parameter cell; source of truth for sizes and security.
-- `submission/code/parameter/chipmunk_original_security_summary.txt`
-  — Chipmunk's published parameters under modern Dilithium-style
-  estimation; the data behind the "~40-bit Chipmunk" finding.
-
-**Workspace-side companions** (created by the original review
-session; not committed to the repo, present only in the dev
-environment where this review was produced):
-
-- A project `CLAUDE.md` at the workspace root with the
-  agent-facing implementation guide.
-- Two skills under `.claude/skills/`: `lemur-paper-analysis` and
-  `lemur-prior-work-survey`.
-- Working notes and audit/review-subagent transcripts under `tmp/`.
+- [`submission/code/README.md`](../submission/code/README.md) — artifact README.
+- [`submission/code/parameter/summary.txt`](../submission/code/parameter/summary.txt) — Sage estimator output per parameter cell.
+- [`submission/code/parameter/chipmunk_original_security_summary.txt`](../submission/code/parameter/chipmunk_original_security_summary.txt) — Chipmunk's published parameters under modern Dilithium-style estimation; data behind the "~40-bit Chipmunk" finding.
 
 
 ### <a id="sec-1"></a>1. Executive verdict [↑](#toc)
