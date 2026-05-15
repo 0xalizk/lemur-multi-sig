@@ -1,6 +1,6 @@
 <br>
 
-<details><summary><b> &nbsp; 748k tokens 🦞  &nbsp;&nbsp;&nbsp;  ~2h45m 🕒 </b></summary>
+<details><summary><b> &nbsp; 788k tokens 🦞  &nbsp;&nbsp;&nbsp;  ~2h45m 🕒 </b></summary>
 <br>
 🟩 benchmarks rust/py · 🟦 Sage estimator · 🟪 audits & reviews · ⬜ setup <br><br>
 
