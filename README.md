@@ -91,7 +91,7 @@
 3. **Timings track the paper proportionally.** On 11 threads versus
    the paper's 24-thread baseline, every measured operation lands
    within ±15 % of the expected linear thread-count slowdown.
-4. **Three framing caveats** worth flagging for any reviewer:
+4. **Three framing caveats** worth flagging:
    - Table 1 places Rice-encoded Lemur next to raw-encoded Chipmunk
      (~14 % asymmetry, disclosed in the caption but not column
      headers).
@@ -114,8 +114,5 @@
    practice for lattice multi-sigs (Dilithium does the same) but
    worth flagging.
 
-For the full chain of evidence — section-by-section claim
-verification, footnotes citing paper sections / code lines /
-external papers, and reproduction recipe — see
-[`assessment/review.md`](assessment/review.md).
+### [`Full Review`](assessment/review.md)
 
