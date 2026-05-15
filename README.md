@@ -1,5 +1,4 @@
-🦞 `712.3k tokens` <br>
-🕒 `~2h45m walltime`
+# 🦞 `712.3k tokens` <br> 🕒 `~2h45m walltime`
 
 ## Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
 
