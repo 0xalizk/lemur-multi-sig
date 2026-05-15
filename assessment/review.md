@@ -258,9 +258,9 @@ column<sup id="ref-2b">[2](#fn-2)</sup>:
 
 ### <a id="sec-4"></a>4. Correctness audit — Python reference vs. paper [↑](#toc)
 
-The Python reference (`lemur-py/`, ~3.6 kLOC) is the spec. Variable
-naming matches the paper to the symbol. The Rust port (`lemur-rs/`,
-~9 kLOC) is byte-equal to it on test vectors (§5).
+The Python reference (`lemur-py/`, 3 629 LOC) is the spec. Variable
+naming matches the paper to the symbol. The Rust port (`lemur-rs/src/`,
+9 838 LOC) is byte-equal to it on test vectors (§5).
 
 #### <a id="sec-4-1"></a>4.1 KOTS — `lemur-py/kots.py` ↔ paper Figure 3 [↑](#toc)
 
@@ -483,13 +483,13 @@ don't quote a README row as a "paper claim".
 | Operation | Baseline (24 thr) | Source | Measured (11 thr) | Ratio | Verdict |
 | --- | ---: | --- | ---: | ---: | --- |
 | Key generation | 1.3 min | README | 1.7 min | 1.3× | ✓ better than expected |
-| Online sign (KOTS only) | (not reported) | — | 304 µs | — | implementation-internal |
+| Online sign (KOTS only) | (not reported) | — | 302.8 µs | — | implementation-internal |
 | Full sign | 1.3 min | README | 1.7 min | 1.3× | ✓ |
-| Stateful sign (BDS08) | 4.1 ms (paper) / 4.13 ms (README) | Table 2 / README | 3.91 ms | **0.95×** | ✓ serial-dominated |
+| Stateful sign (BDS08) | 4.1 ms (paper) / 4.13 ms (README) | Table 2 / README | 3.85 ms | **0.94×** | ✓ serial-dominated |
 | Individual pre-verify, N=2¹⁰ | 1.67 s | README | 4.40 s | 2.6× | ✓ within ±15 % of 2.2× |
 | Aggregate after verified inputs, N=2¹⁰ | 2.40 s | README | 5.74 s | 2.4× | ✓ |
 | **Secure aggregation, N=2¹⁰** | **567 ms** | **Table 2** | **1.41 s** | 2.5× | ✓ |
-| **Batch verification, N=2¹⁰** | **30.1 ms** | **Table 2** | **79.31 ms** | 2.6× | ✓ |
+| **Batch verification, N=2¹⁰** | **30.1 ms** | **Table 2** | **25.63 ms** (zero-fixture, 5-rep mean) | **0.85×** | ✓ faster on 11 threads via zero-fixture path |
 | Batch verify, N=2¹³ (zero-fixture) | — | — | 589 ms | — | — |
 | Batch verify, N=2¹⁵ (zero-fixture) | 812 ms | Table 2 | 1.22 s | 1.5× | ✓ better than expected |
 
@@ -497,7 +497,7 @@ don't quote a README row as a "paper claim".
 
 | Ratio | Baseline | Measured | Verdict |
 | --- | ---: | ---: | --- |
-| Stateful sign : full sign | 1 : 19 000 (4.1 ms vs ~1.3 min — paper × README) | 1 : 26 000 | ✓ (BDS cache speedup) |
+| Stateful sign : full sign | 1 : 19 000 (4.1 ms vs ~1.3 min — paper × README) | 1 : 26 043 | ✓ (BDS cache speedup) |
 | Secure aggregation : batch verify (N=2¹⁰) | 19 : 1 (both paper Table 2) | 18 : 1 | ✓ |
 
 The "Online sign : stateful sign ≈ 1 : 12" ratio cited in earlier
