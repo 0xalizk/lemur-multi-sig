@@ -1,40 +1,48 @@
 ## Lemur — Analysis & Correctness Review
 
 <a id="toc"></a>
-<sub>
+
+<sub><sub>
 
 **Contents**
 
-- [1. Executive verdict](#sec-1)
-- [2. Field placement and paradigm](#sec-2)
-- [3. What the paper proves and what it does not](#sec-3)
-- [4. Correctness audit — Python reference vs. paper](#sec-4)
-  - [4.1 KOTS — `lemur-py/kots.py` ↔ paper Figure 3](#sec-4-1)
-  - [4.2 HVC — `lemur-py/hvc.py` ↔ paper Figure 4 + Appendix B](#sec-4-2)
-  - [4.3 Lemur composition — `lemur-py/lemur.py` ↔ paper Figure 5](#sec-4-3)
-  - [4.4 Audit checkpoints — none of the foot-guns triggered](#sec-4-4)
-- [5. Implementation testing — deterministic checks](#sec-5)
-  - [5.1 Rust test suite](#sec-5-1)
-  - [5.2 Aggregate-signature size — `lemur sizes`](#sec-5-2)
-  - [5.3 Rice-encoded sizes for larger N — `rice_sizes.py`](#sec-5-3)
-  - [5.4 Python ↔ Rust byte-equivalence — `vectors`](#sec-5-4)
-  - [5.5 Chipmunk security recomputation — committed estimator output](#sec-5-5)
-  - [5.6 Sage parameter-estimator outputs — reproduced from source](#sec-5-6)
-- [6. Benchmark measurements vs paper](#sec-6)
-  - [6.1 What I could not run](#sec-6-1)
-- [7. Performance internals — what is actually fast](#sec-7)
-  - [7.1 Gaussian CDT sampler (`lemur-rs/src/sample.rs`)](#sec-7-1)
-  - [7.2 NTT — two backends (`ntt.rs` + `aux_ntt.rs`)](#sec-7-2)
-  - [7.3 Rayon parallelism (`lemur-rs/src/lemur.rs:lemur_aggregate`)](#sec-7-3)
-- [8. Parameter regeneration flow](#sec-8)
-- [9. Related work — verified facts](#sec-9)
-  - [9.1 Missing references the paper *should* have engaged with](#sec-9-1)
-  - [9.2 Notable framing softening worth flagging](#sec-9-2)
-- [10. Open questions and limitations of this review](#sec-10)
-- [11. Reproduction recipe](#sec-11)
-- [Footnotes](#footnotes)
+<table><tr><td valign="top">
 
-</sub>
+<a href="#sec-1" style="text-decoration:none">1. Executive verdict</a><br>
+<a href="#sec-2" style="text-decoration:none">2. Field placement and paradigm</a><br>
+<a href="#sec-3" style="text-decoration:none">3. What the paper proves and what it does not</a><br>
+<a href="#sec-4" style="text-decoration:none">4. Correctness audit — Python reference vs. paper</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-1" style="text-decoration:none">4.1 KOTS — paper Figure 3</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-2" style="text-decoration:none">4.2 HVC — paper Figure 4 + Appendix B</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-3" style="text-decoration:none">4.3 Lemur composition — paper Figure 5</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-4" style="text-decoration:none">4.4 Audit checkpoints</a><br>
+<a href="#sec-5" style="text-decoration:none">5. Implementation testing</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-1" style="text-decoration:none">5.1 Rust test suite</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-2" style="text-decoration:none">5.2 Aggregate-signature size — `lemur sizes`</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-3" style="text-decoration:none">5.3 Rice-encoded sizes for larger N</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-4" style="text-decoration:none">5.4 Python ↔ Rust byte-equivalence</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-5" style="text-decoration:none">5.5 Chipmunk security recomputation</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-5-6" style="text-decoration:none">5.6 Sage parameter-estimator outputs</a>
+
+</td><td valign="top">
+
+<a href="#sec-6" style="text-decoration:none">6. Benchmark measurements vs paper</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-6-1" style="text-decoration:none">6.1 What I could not run</a><br>
+<a href="#sec-7" style="text-decoration:none">7. Performance internals</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-1" style="text-decoration:none">7.1 Gaussian CDT sampler</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-2" style="text-decoration:none">7.2 NTT — two backends</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-7-3" style="text-decoration:none">7.3 Rayon parallelism</a><br>
+<a href="#sec-8" style="text-decoration:none">8. Parameter regeneration flow</a><br>
+<a href="#sec-9" style="text-decoration:none">9. Related work — verified facts</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-1" style="text-decoration:none">9.1 Missing references</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-9-2" style="text-decoration:none">9.2 Notable framing softening</a><br>
+<a href="#sec-10" style="text-decoration:none">10. Open questions and limitations</a><br>
+<a href="#sec-11" style="text-decoration:none">11. Reproduction recipe</a><br>
+<a href="#footnotes" style="text-decoration:none">Footnotes</a>
+
+</td></tr></table>
+
+</sub></sub>
 
 
 Paper: *Lemur: Scalable Post-Quantum Synchronized Multi-Signatures*
