@@ -58,9 +58,10 @@
 2. **Aggregate-signature sizes:** 201 KB at `N = 2¹⁰`, 284 KB at
    `N = 2¹⁵`, **394 KB at `N = 2²⁰`** — Rice-encoded; the worst-case
    theoretical bound is 239 / 331 / 457 KB respectively.
-3. **Timings (24-thread baseline):** stateful sign 4.1 ms, batch
-   verification 30.1 ms at `N = 2¹⁰`, 812 ms at `N = 2¹⁵`,
-   25.3 s at `N = 2²⁰`; secure aggregation 567 ms at `N = 2¹⁰`,
+3. **Timings (24-thread baseline, paper Table 2):** stateful sign 4.1 ms;
+   batch verification 30.1 ms at `N = 2¹⁰` (measured), 812 ms at `N = 2¹⁵`
+   (zero-fixture), 25.3 s at `N = 2²⁰` (linear-extrapolated);
+   secure aggregation 567 ms at `N = 2¹⁰` (measured),
    linear-extrapolated to ≈ 12 min at `N = 2²⁰`.
 4. **New computational assumption:** Dual Hint-MLWE, with a tight
    reduction from standard MLWE (`8m·ε₂` statistical slack, no
@@ -108,8 +109,11 @@
    lattice-PoK paradigm Lemur's introduction trichotomy does not
    contain; and Anada-Fukumitsu-Hasegawa *"Tightly Secure
    Lattice-Based Synchronized Aggregate Signature in Standard Model"*
-   (ICISC 2024) — a direct sibling in the synchronized lattice column
-   with a strictly stronger security model.
+   (ICISC 2024) — a sibling in the synchronized lattice column that
+   occupies a *different* cell of the (proof-model × threat-model)
+   grid: stronger on the proof-model axis (standard model, not ROM)
+   but weaker on the threat-model axis (certified-key, not
+   rogue-key-safe).
 6. **Reduction [loss](assessment/review.md#sec-10) not absorbed in parameter selection.**
    Lemma 4.1's
    `N(Q+1)²` multi-user loss is `~2¹⁴⁰` at `N = 2²⁰, Q_H = 2⁶⁰`;

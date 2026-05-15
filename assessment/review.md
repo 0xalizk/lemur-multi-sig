@@ -116,7 +116,7 @@ comparison and the lack of comparison against
 post-2024 paradigms ([Aardal et al.](https://eprint.iacr.org/2024/311)
 CRYPTO '24 Falcon+LaBRADOR<sup id="ref-8">[8](#fn-8)</sup>,
 [Anada et al.](https://link.springer.com/chapter/10.1007/978-981-96-5566-3_4)
-ICISC '24 standard-model lattice synchronized<sup id="ref-9">[9](#fn-9)</sup>) leaves
+ICISC '24 lattice-synchronized in a different (proof × threat) cell<sup id="ref-9">[9](#fn-9)</sup>) leaves
 gaps a reviewer should flag.
 
 
@@ -387,10 +387,10 @@ scripts").
 ```
 python3 cli.py vectors --tau 3 --signers 2 --slot 0 --msg "artifact check" --out /tmp/lemur-py-vectors.json
 lemur vectors --tau 3 --signers 2 --slot 0 --msg "artifact check" --out /tmp/lemur-rs-vectors.json
-diff <(jq -S . py.json) <(jq -S . rs.json)
+python3 -c "import json; py=json.load(open('/tmp/lemur-py-vectors.json')); rs=json.load(open('/tmp/lemur-rs-vectors.json')); print({k: ('MATCH' if py.get(k)==rs.get(k) else 'MISMATCH') for k in ('pp','signatures','ivrfy','avrfy','agg_attempt','aggregate')})"
 ```
 
-**Result:** all keys match byte-for-byte:
+**Result:** all cryptographic JSON fields equal under Python equality:
 
 ```
 pp:           MATCH
@@ -501,7 +501,7 @@ don't quote a README row as a "paper claim".
 | Ratio | Baseline | Measured | Verdict |
 | --- | ---: | ---: | --- |
 | Stateful sign : full sign | 1 : 19 000 (4.1 ms vs ~1.3 min — paper × README) | 1 : 26 043 | ✓ (BDS cache speedup) |
-| Secure aggregation : batch verify (N=2¹⁰) | 19 : 1 (both paper Table 2) | 18 : 1 | ✓ |
+| Secure aggregation : batch verify (N=2¹⁰) | 19 : 1 (both paper Table 2) | 55 : 1 (1.41 s ÷ 25.63 ms; protocols differ — aggregation from `bench --fast` measured before OOM at N=8192; batch verify from `bench_verify --zero-fixture` 5-rep mean) | drift due to mixed protocols |
 
 The "Online sign : stateful sign ≈ 1 : 12" ratio cited in earlier
 review iterations was implementation-internal (not in Table 2);
@@ -890,7 +890,11 @@ Synchronized Aggregate Signature in Standard Model." ICISC 2024,
 Springer LNCS 15596. DOI
 [10.1007/978-981-96-5566-3_4](https://link.springer.com/chapter/10.1007/978-981-96-5566-3_4).
 First lattice-based synchronized aggregate signature secure in the
-standard model (not ROM). [↩](#ref-9) [↩](#ref-9b) [↩](#ref-9c) [↩](#ref-9d)
+standard model (not ROM); however, the proof is in the **certified-key
+model** (the adversary cannot register arbitrary public keys), strictly
+weaker than the rogue-key-safe threat model Lemur targets. The paper's
+abstract states the scheme is "secure in the standard model and the
+certified-key model." [↩](#ref-9) [↩](#ref-9b) [↩](#ref-9c) [↩](#ref-9d)
 
 <a id="fn-10"></a>**10.** Lemur paper §1 (PDF lines 57–90). Names only BLS [3],
 hash+SNARK [7], and the lattice-synchronized lineage. Falcon+LaBRADOR
