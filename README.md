@@ -6,6 +6,8 @@
 
 ### Lemur — [paper](submission/report.pdf), [code](submission/code/), and independent [assessment](assessment/review.md)
 
+<br>
+
 ### What the paper delivers: 
 
 1. **Lemur is a synchronized post-quantum multi-signature** that
