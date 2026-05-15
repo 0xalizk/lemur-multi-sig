@@ -78,31 +78,31 @@
 ### What the assessment found: 
 
 1. **Implementation matches the paper.** Every deterministic claim
-   reproduces: [aggregate sizes (201.2 / 283.5 / 394.4 KB exact)](assessment/review.md#sec-5-3),
-   algorithm-level structure ([Python ↔ Rust byte-equivalent on
-   `vectors`](assessment/review.md#sec-5-4)),
-   [all 52 cargo tests pass](assessment/review.md#sec-5-1).
-   [Audit checkpoints](assessment/review.md#sec-4-4) in
+   reproduces: aggregate [sizes](assessment/review.md#sec-5-3) (201.2 / 283.5 / 394.4 KB exact),
+   algorithm-level structure (Python ↔ Rust [byte-equivalent](assessment/review.md#sec-5-4) on
+   `vectors`),
+   all 52 cargo [tests](assessment/review.md#sec-5-1) pass.
+   Audit [checkpoints](assessment/review.md#sec-4-4) in
    `kots.py` / `hvc.py` / `lemur.py` all correctly implemented.
-2. **[Sage estimator outputs reproduce from source.](assessment/review.md#sec-5-6)**
+2. **Sage [estimator](assessment/review.md#sec-5-6) outputs reproduce from source.**
    `chipmunk_original.sage` and `chipmunk_param.sage` produce
    byte-identical outputs to the committed files; `lemur_param.sage`
    (chunked by `(τ, N)` to fit 8 GiB) produces a `summary.txt`
    field-identical to the committed file across all 16 cells. The
-   ["40-bit Chipmunk" finding](assessment/review.md#sec-5-5) is independently reproducible.
-3. **[Timings track the paper proportionally.](assessment/review.md#sec-6)**
+   ["40-bit](assessment/review.md#sec-5-5) Chipmunk" finding is independently reproducible.
+3. **[Timings](assessment/review.md#sec-6) track the paper proportionally.**
    On 11 threads versus the paper's 24-thread baseline, every measured operation lands
    within ±15 % of the expected linear thread-count slowdown.
-4. **[Three framing caveats](assessment/review.md#sec-9-2)** worth flagging:
+4. **Three framing [caveats](assessment/review.md#sec-9-2)** worth flagging:
    - Table 1 places Rice-encoded Lemur next to raw-encoded Chipmunk
      (~14 % asymmetry, disclosed in the caption but not column
      headers).
    - "Order of magnitude" KOTS shrink against Chipmunk is 4.64× at
      `N = 2¹⁰`, ~12.8× at `N = 2²⁰` — only the favorable corner
      reaches the headline.
-   - [No runtime comparison vs Chipmunk](assessment/review.md#sec-10) (acknowledged in §1.1: "we
+   - No runtime [comparison](assessment/review.md#sec-10) vs Chipmunk (acknowledged in §1.1: "we
      are unable to provide a meaningful runtime comparison").
-5. **[Two adjacent paradigms uncited](assessment/review.md#sec-9-1):**
+5. **Two adjacent paradigms [uncited](assessment/review.md#sec-9-1):**
    Aardal et al. *"Aggregating
    Falcon Signatures with LaBRADOR"* (CRYPTO 2024) — a PQ-sig +
    lattice-PoK paradigm Lemur's introduction trichotomy does not
@@ -110,7 +110,7 @@
    Lattice-Based Synchronized Aggregate Signature in Standard Model"*
    (ICISC 2024) — a direct sibling in the synchronized lattice column
    with a strictly stronger security model.
-6. **[Reduction loss not absorbed in parameter selection.](assessment/review.md#sec-10)**
+6. **Reduction [loss](assessment/review.md#sec-10) not absorbed in parameter selection.**
    Lemma 4.1's
    `N(Q+1)²` multi-user loss is `~2¹⁴⁰` at `N = 2²⁰, Q_H = 2⁶⁰`;
    absorbing it would require ~268-bit core hardness. Lemur picks
