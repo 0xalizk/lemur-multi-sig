@@ -84,15 +84,8 @@ verification, footnotes citing paper sections / code lines /
 external papers, and reproduction recipe — see
 [`assessment/review.md`](assessment/review.md).
 
-## Session resources
-
-The assessment was produced inside a single long-running Claude Code
-session: a primary review pass, three lens-specific audit subagents
-(theory / implementation / field-comparison), three fact-checker
-subagents on `review.md`, six corresponding reviewer subagents, plus
-empirical work (Rust tests + benchmarks + Sage estimator re-runs).
-
-**Walltime (sum of significant compute):**
+<details>
+<summary><strong>Session resources</strong></summary>
 
 | Activity | Wall time |
 | --- | ---: |
@@ -109,18 +102,4 @@ empirical work (Rust tests + benchmarks + Sage estimator re-runs).
 | 6 fact-check subagents (3 FC + 3 review, run in parallel batches) | ~30 min |
 | **Total compute walltime** | **~2 h 45 min** |
 
-(Sequential human-perceived session length is longer than this; the
-above sums only the actively-running compute. Subagent batches were
-parallel, so the wall-clock contribution is the slowest agent per
-batch, not the sum across agents in a batch.)
-
-**Tokens consumed:** **712.3 k / 1 M context (71 %)** at end of
-session (live `/context` reading). Roughly 35 % of those were
-consumed by the audit/review/fact-check rounds and the Sage
-validation phase, after a midway `/context` snapshot showed
-249.9 k / 1 M.
-
-**Hardware:** Docker container (`node:22-slim`, Debian bookworm),
-aarch64 Linux, **11 CPU threads, 8 GiB RAM**, no GPU. The 8 GiB
-ceiling forced the `lemur_param.sage` chunking; a 16+ GiB host
-would run it in one go.
+</details>
