@@ -10,7 +10,7 @@
 
 <a href="#sec-1" style="text-decoration:none">1. TLDR</a><br>
 <a href="#sec-2" style="text-decoration:none">2. Field placement and paradigm</a><br>
-<a href="#sec-3" style="text-decoration:none">3. What the paper proves and what it does not</a><br>
+<a href="#sec-3" style="text-decoration:none"><strong>3. What the paper proves and what it does not</strong></a><br>
 <a href="#sec-4" style="text-decoration:none">4. Correctness audit — Python reference vs. paper</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-1" style="text-decoration:none">4.1 KOTS — paper Figure 3</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#sec-4-2" style="text-decoration:none">4.2 HVC — paper Figure 4 + Appendix B</a><br>
