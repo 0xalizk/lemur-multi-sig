@@ -103,15 +103,17 @@
      reaches the headline.
    - No runtime [comparison](assessment/review.md#sec-10) vs Chipmunk (acknowledged in §1.1: "we
      are unable to provide a meaningful runtime comparison").
-5. **Two adjacent paradigms [uncited](assessment/review.md#sec-9-1):**
-   Aardal et al. *"Aggregating
+5. **[Two](assessment/review.md#sec-9-1) adjacent paradigms uncited**
+   - Aardal et al. *"Aggregating
    Falcon Signatures with LaBRADOR"* (CRYPTO 2024) — a PQ-sig +
    lattice-PoK paradigm Lemur's introduction trichotomy does not
-   contain; and Anada-Fukumitsu-Hasegawa *"Tightly Secure
+   contain
+   - Anada-Fukumitsu-Hasegawa *"Tightly Secure
    Lattice-Based Synchronized Aggregate Signature in Standard Model"*
    (ICISC 2024) — a sibling in the synchronized lattice column that
    occupies a *different* cell of the (proof-model × threat-model)
-   grid: stronger on the proof-model axis (standard model, not ROM)
+   grid:
+      - stronger on the proof-model axis (standard model, not ROM)
    but weaker on the threat-model axis (certified-key, not
    rogue-key-safe).
 6. **Reduction [loss](assessment/review.md#sec-10) not absorbed in parameter selection.**
