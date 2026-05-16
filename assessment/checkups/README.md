@@ -5,7 +5,7 @@ tricks, and pitfalls to avoid when working with the Lemur artifact._
 
 - In total 10 major non-cosmetic issues found and fixed, plus 7 minor.
 
-- Raw audit transcripts behind [`../review.md`](../review.md):
+- Raw audit transcripts:
   - [`checkup_0/`](checkup_0/) paper audit (theory / implementation / field lenses)
   - [`checkup_1/`](checkup_1/) per-claim fact-check on `review.md` (197 atomic claims)
   - [`checkup_2/`](checkup_2/) repo-wide integrity sweep
