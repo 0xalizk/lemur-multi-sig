@@ -102,7 +102,7 @@ Chipmunk's actual security (claimed 112-bit, actual 22.8–39.4-bit
 range under modern lattice estimation)<sup id="ref-4">[4](#fn-4)</sup> is, on its own, a useful
 service to the field.
 
-**Compelling results with three caveats.** (1) The Table 1 comparison
+**Three caveats.** (1) The Table 1 comparison
 puts Rice-encoded Lemur against raw-encoded Chipmunk, a ~14%
 asymmetry disclosed in the caption but not on the column headers<sup id="ref-5">[5](#fn-5)</sup>.
 (2) The "order of magnitude" KOTS shrink against Chipmunk is
